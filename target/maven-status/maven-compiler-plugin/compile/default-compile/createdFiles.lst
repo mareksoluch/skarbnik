@@ -1,0 +1,6 @@
+org/solo/importing/FileImport.class
+org/solo/importing/ImportController.class
+org/solo/importing/ImportController$BillingEntry.class
+org/solo/login/WebSecurityConfig.class
+org/solo/login/LoginApplication.class
+org/solo/login/MvcConfig.class
