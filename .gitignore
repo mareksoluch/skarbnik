@@ -1,0 +1,33 @@
+# Maven-generated files
+**/target
+
+# Eclipse-generated files
+**/.settings
+**/.project
+**/.classpath
+**/.checkstyle
+**/bin
+
+# Idea-generated files
+**/.idea/shelf
+**/.idea/workspace.xml
+**/.idea/dataSources*
+**/.idea/scala_compiler.xml
+**/.idea/.name
+**/atlassian-ide-plugin.xml
+
+# Never push any logs
+**/*.log
+**/*.log.gz
+**/journal
+
+**/.DS_Store
+
+*.swp
+
+# JavaScript stuff
+**/node_modules
+**/bower_components
+
+**/*-data
+
