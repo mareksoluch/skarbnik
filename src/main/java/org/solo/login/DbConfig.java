@@ -7,6 +7,5 @@ import org.springframework.data.jdbc.repository.config.JdbcConfiguration;
 
 @EnableJdbcRepositories("org.solo.repositories")
 @Configuration
-//@Import(JdbcConfiguration.class)
 public class DbConfig {
 }

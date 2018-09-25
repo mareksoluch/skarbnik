@@ -30,23 +30,6 @@ public class ImportController {
     @Autowired
     DataSource datasource;
 
-    @GetMapping("/loadbilling")
-    public String fileImportForm(Model model) {
-        model.addAttribute("fileimport", new FileImport());
-        return "loadbilling";
-    }
-
-    @PostMapping("/loadbilling")
-    public String fileImportSubmit(Model model, @ModelAttribute FileImport fileimport) throws ParseException, SQLException {
-
-        String csvText = fileimport.getCsvText();
-        Scanner scanner = new Scanner(csvText);
-
-
-        importBilling(scanner);
-        model.addAttribute("fileimport", new FileImport());
-        return "loadbilling";
-    }
 
     public void importBilling(Scanner scanner) throws ParseException, SQLException {
         List<BillingEntry> result = parseBilling(scanner);
