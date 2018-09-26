@@ -1,25 +1,23 @@
 package org.solo.importing;
 
+import org.solo.login.Users;
+import org.solo.repositories.IncomesRepository;
+import org.solo.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.sql.DataSource;
 import java.io.File;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Controller
 public class ImportController {
@@ -30,42 +28,32 @@ public class ImportController {
     @Autowired
     DataSource datasource;
 
+    @Autowired
+    UserRepository userRepository;
+
+    @Autowired
+    IncomesRepository incomesRepository;
+
 
     public void importBilling(Scanner scanner) throws ParseException, SQLException {
         List<BillingEntry> result = parseBilling(scanner);
 
         Connection connection = datasource.getConnection();
         connection.setAutoCommit(false);
-        PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO incomes " +
-                "(username, account ,qty , description , transactiontime) " +
-                "VALUES (?,?,?,?,?)");
+//        PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO incomes " +
+//                "(username, account ,qty , description , transactiontime) " +
+//                "VALUES (?,?,?,?,?)");
 
-        PreparedStatement selectUsersStatement = connection
-                .prepareStatement("SELECT username, childName, childSurname FROM users");
-
-        ResultSet resultSet = selectUsersStatement.executeQuery();
-        List<User> allUsers = new LinkedList<>();
-        while (resultSet.next()) {
-            allUsers.add(new User(resultSet.getString(1), resultSet.getString(2), resultSet.getString(3)));
-        }
+        Iterable<Users> all = userRepository.findAll();
+        List<Users> allUsers = StreamSupport.stream(all.spliterator(), false)
+                .collect(Collectors.toList());
 
         result.forEach(entry -> {
 
             Optional<String> userOptional = mapUser(entry, allUsers);
 
-            userOptional.ifPresent(user -> {
-                try {
-                    preparedStatement.setString(1, user);
-                    preparedStatement.setString(2, entry.getAccountNumber());
-                    preparedStatement.setBigDecimal(3, entry.getAmount());
-                    preparedStatement.setString(4, entry.getDescription());
-                    preparedStatement.setDate(5, new java.sql.Date(entry.getOpertionDate().getTime()));
-
-                    preparedStatement.execute();
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                }
-            });
+            userOptional.ifPresent(user ->
+                    incomesRepository.save(new Incomes(null, user, entry.getAccountNumber(), entry.getAmount(), entry.getDescription(), new Date(entry.getOpertionDate().getTime()))));
 
             if (!userOptional.isPresent()) {
                 // log that could not map user
@@ -75,20 +63,20 @@ public class ImportController {
         connection.commit();
     }
 
-    private Optional<String> mapUser(BillingEntry entry, List<User> allUsers) {
+    private Optional<String> mapUser(BillingEntry entry, List<Users> allUsers) {
 
         return allUsers.stream()
-                .filter(user -> billingMatchesUser(entry, user))
+                .filter(users -> billingMatchesUser(entry, users))
                 .findFirst()
-                .map(User::getUsername);
+                .map(Users::getUsername);
 
     }
 
-    private boolean billingMatchesUser(BillingEntry entry, User user) {
-        return !user.getChildSurname().isEmpty() && !user.getChildName().isEmpty() &&
-                (containsIgnoringPolishSigns(entry.getTitle(), user.getChildSurname())
-                        || containsIgnoringPolishSigns(entry.getIssuer(), user.getChildSurname())) &&
-                containsIgnoringPolishSigns(entry.getTitle(), user.getChildName());
+    private boolean billingMatchesUser(BillingEntry entry, Users users) {
+        return !users.getChildSurname().isEmpty() && !users.getChildName().isEmpty() &&
+                (containsIgnoringPolishSigns(entry.getTitle(), users.getChildSurname())
+                        || containsIgnoringPolishSigns(entry.getIssuer(), users.getChildSurname())) &&
+                containsIgnoringPolishSigns(entry.getTitle(), users.getChildName());
     }
 
     private boolean containsIgnoringPolishSigns(String containingString, String phraseToSearch) {
@@ -133,7 +121,6 @@ public class ImportController {
         while (scanner.hasNext());
 
 
-
     }
 
     private BillingEntry parseLine(String line) {
@@ -143,29 +130,5 @@ public class ImportController {
     private boolean reachedBilling(String line) {
         return line.startsWith("#Data operacji");
     }
-
-    private class User {
-        private final String username;
-        private final String childName;
-        private final String childSurname;
-
-        private User(String username, String childName, String childSurname) {
-            this.username = username;
-            this.childName = childName;
-            this.childSurname = childSurname;
-        }
-
-
-        public String getUsername() {
-            return username;
-        }
-
-        public String getChildName() {
-            return childName;
-        }
-
-        public String getChildSurname() {
-            return childSurname;
-        }
-    }
 }
+

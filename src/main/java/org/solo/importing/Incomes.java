@@ -22,6 +22,10 @@ public class Incomes implements Persistable<Long> {
         this.description = description;
         this.transactiontime = transactiontime;
     }
+//
+//    public Incomes(String username, String account, BigDecimal qty, String description, Date transactiontime) {
+//        this(null, username, account, qty, description, transactiontime);
+//    }
 
     @Override
     public Long getId() {
@@ -30,7 +34,7 @@ public class Incomes implements Persistable<Long> {
 
     @Override
     public boolean isNew() {
-        return false;
+        return true;
     }
 
     public String getUsername() {
