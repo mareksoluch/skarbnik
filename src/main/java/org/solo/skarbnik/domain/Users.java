@@ -1,4 +1,4 @@
-package org.solo.login;
+package org.solo.skarbnik.domain;
 
 import org.springframework.data.domain.Persistable;
 
@@ -33,6 +33,6 @@ public class Users implements Persistable<String> {
 
     @Override
     public boolean isNew() {
-        return false;
+        return username == null;
     }
 }

@@ -1,4 +1,4 @@
-package org.solo.login;
+package org.solo.skarbnik.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;

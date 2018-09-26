@@ -1,6 +1,7 @@
-package org.solo.importing;
+package org.solo.skarbnik.controllers;
 
-import org.solo.repositories.IncomesRepository;
+import org.solo.skarbnik.repositories.IncomesRepository;
+import org.solo.skarbnik.domain.Incomes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -9,16 +10,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import javax.sql.DataSource;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
+
+import static org.solo.skarbnik.utils.Utils.toList;
 
 @Controller
 public class ShowBilling {
-
-    @Autowired
-    DataSource datasource;
 
     @Autowired
     IncomesRepository repository;
@@ -33,16 +30,16 @@ public class ShowBilling {
     private List<Incomes> listBillings() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if(isAdmin(auth)){
-            return StreamSupport.stream(repository.findAll().spliterator(), false)
-                    .collect(Collectors.toList());
+            return toList(repository.findAll());
         } else {
-            return StreamSupport.stream(repository.findByUsername(auth.getName()).spliterator(), false)
-                    .collect(Collectors.toList());
+            return toList(repository.findByUsername(auth.getName()));
         }
     }
 
     private boolean isAdmin(Authentication auth) {
-        return auth.getAuthorities().stream().map(GrantedAuthority::getAuthority).anyMatch("ROLE_ADMIN"::equals);
+        return auth.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch("ROLE_ADMIN"::equals);
     }
 
 }

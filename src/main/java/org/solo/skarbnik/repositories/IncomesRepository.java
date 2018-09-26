@@ -1,6 +1,6 @@
-package org.solo.repositories;
+package org.solo.skarbnik.repositories;
 
-import org.solo.importing.Incomes;
+import org.solo.skarbnik.domain.Incomes;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;

@@ -1,19 +1,23 @@
-package org.solo.importing;
+package org.solo.skarbnik.domain;
 
 import org.springframework.data.domain.Persistable;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.PersistenceConstructor;
+
 public class Incomes implements Persistable<Long> {
 
-    private final Long id;
-    private final String username;
-    private final String account;
-    private final BigDecimal qty;
-    private final String description;
-    private final Date transactiontime;
+    private @Id Long id;
+    private String username;
+    private String account;
+    private BigDecimal qty;
+    private String description;
+    private Date transactiontime;
 
+    @PersistenceConstructor
     public Incomes(Long id, String username, String account, BigDecimal qty, String description, Date transactiontime) {
         this.id = id;
         this.username = username;
@@ -22,10 +26,10 @@ public class Incomes implements Persistable<Long> {
         this.description = description;
         this.transactiontime = transactiontime;
     }
-//
-//    public Incomes(String username, String account, BigDecimal qty, String description, Date transactiontime) {
-//        this(null, username, account, qty, description, transactiontime);
-//    }
+
+    public Incomes(String username, String account, BigDecimal qty, String description, Date transactiontime) {
+        this(null, username, account, qty, description, transactiontime);
+    }
 
     @Override
     public Long getId() {
@@ -34,7 +38,7 @@ public class Incomes implements Persistable<Long> {
 
     @Override
     public boolean isNew() {
-        return true;
+        return id == null;
     }
 
     public String getUsername() {

@@ -1,7 +1,7 @@
 package org.solo.importing;
 
-import org.junit.Assert;
 import org.junit.Test;
+import org.solo.skarbnik.utils.PolishSignsRemover;
 
 import static org.junit.Assert.*;
 

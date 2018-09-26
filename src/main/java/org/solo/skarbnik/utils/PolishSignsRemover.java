@@ -1,4 +1,4 @@
-package org.solo.importing;
+package org.solo.skarbnik.utils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +27,7 @@ public class PolishSignsRemover {
     }
 
 
-    public String map(String input){
+    public static String map(String input){
         String result = input;
         for(Map.Entry<String, String> mapping : mappings.entrySet()){
             result = result.replaceAll(mapping.getKey(), mapping.getValue());
