@@ -5,14 +5,20 @@ import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.domain.Persistable;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Expenses  implements Persistable<Long> {
 
-    private @Id Long id;
-    private BigDecimal qty;
-    private String description;
-    private Date dueDate;
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("YYYY-MM-DD");
+    @Id Long id;
+    BigDecimal qty;
+    String description;
+    Date dueDate;
+
+    public Expenses() {
+    }
 
     @PersistenceConstructor
     public Expenses(Long id, BigDecimal qty, String description, Date dueDate) {
@@ -34,5 +40,49 @@ public class Expenses  implements Persistable<Long> {
     @Override
     public boolean isNew() {
         return id == null;
+    }
+
+    public BigDecimal getQty() {
+        return qty;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public Date getDueDate() {
+        return dueDate;
+    }
+
+    public void setQty(BigDecimal qty) {
+        this.qty = qty;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setDueDate(Date dueDate) {
+        this.dueDate = dueDate;
+    }
+
+    public void setDueDateString(String dueDate) {
+        try {
+            this.dueDate = DATE_FORMAT.parse(dueDate);
+        } catch (ParseException e) {
+            this.dueDate = null;
+        }
+    }
+
+    public String getDueDateString() {
+        return dueDate !=null ? DATE_FORMAT.format(dueDate) : null;
+    }
+
+    public UsersExpense payed(){
+        return new UsersExpense(this, true);
+    }
+
+    public UsersExpense unpayed(){
+        return new UsersExpense(this, false);
     }
 }

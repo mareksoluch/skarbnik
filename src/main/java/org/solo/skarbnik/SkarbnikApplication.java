@@ -4,7 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
-@ComponentScan({ "org.solo.login", "org.solo.importing", "org.solo.skarbnik.repositories" })
+@ComponentScan({ "org.solo.skarbnik", "org.solo.skarbnik.config", "org.solo.skarbnik.controllers", "org.solo.skarbnik.repositories" })
 @SpringBootApplication
 public class SkarbnikApplication {
 
