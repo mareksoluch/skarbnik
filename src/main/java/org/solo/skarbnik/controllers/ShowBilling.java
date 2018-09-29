@@ -45,9 +45,26 @@ public class ShowBilling {
         Map<String, List<UsersExpense>> userExpenses = incomesForUsers.entrySet().stream()
                 .collect(toMap(Map.Entry::getKey, entry -> toUsersExpenses(expenses, sumQty(entry.getValue()))));
 
+        model.addAttribute("expenses", expenses);
         model.addAttribute("userExpenses", userExpenses);
         model.addAttribute("billings", billingEntries);
         return "listbillings";
+    }
+
+    @GetMapping("/usersExpenses")
+    public String usersExpenses(Model model) {
+        List<Incomes> billingEntries = listBillings();
+
+        Map<String, List<Incomes>> incomesForUsers = billingEntries.stream().collect(groupingBy(Incomes::getUsername));
+        List<Expenses> expenses = expensesSortedByDueDate();
+
+        Map<String, List<UsersExpense>> userExpenses = incomesForUsers.entrySet().stream()
+                .collect(toMap(Map.Entry::getKey, entry -> toUsersExpenses(expenses, sumQty(entry.getValue()))));
+
+        model.addAttribute("expenses", expenses);
+        model.addAttribute("userExpenses", userExpenses);
+        model.addAttribute("billings", billingEntries);
+        return "usersExpenses";
     }
 
     private List<Expenses> expensesSortedByDueDate() {

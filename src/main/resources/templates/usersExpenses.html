@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>Użytkownik</th>
+        <th:block th:each="expense : ${expenses}">
+            <th th:text="${expense.description}"></th>
+        </th:block>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="user: ${usersExpenses.keySet()}">
+        <td th:text="${user}"></td>
+        <th:block th:each="usersExpense : ${usersExpenses.get(user)}">
+            <td th:text="${usersExpense.payed}"></td>
+        </th:block>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>
