@@ -62,7 +62,7 @@ public class ShowBilling {
                 .collect(toMap(Map.Entry::getKey, entry -> toUsersExpenses(expenses, sumQty(entry.getValue()))));
 
         model.addAttribute("expenses", expenses);
-        model.addAttribute("userExpenses", userExpenses);
+        model.addAttribute("usersExpenses", userExpenses);
         model.addAttribute("billings", billingEntries);
         return "usersExpenses";
     }

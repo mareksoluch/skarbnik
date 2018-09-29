@@ -1,5 +1,8 @@
 package org.solo.skarbnik.utils;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,5 +36,14 @@ public class PolishSignsRemover {
             result = result.replaceAll(mapping.getKey(), mapping.getValue());
         }
         return result;
+    }
+
+    public static void main(String[] args) throws Exception {
+        BufferedReader bufferedReader = new BufferedReader(new FileReader("/Users/marek.soluch/tmp/uuu"));
+        String line = null;
+        do {
+            line = bufferedReader.readLine();
+            System.out.println(map(line));
+        } while (line !=null);
     }
 }
