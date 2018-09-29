@@ -63,7 +63,7 @@ public class BillingImporter {
     }
 
     private boolean containsIgnoringPolishSigns(String containingString, String phraseToSearch) {
-        return map(containingString).contains(map(phraseToSearch));
+        return map(containingString.toLowerCase()).contains(map(phraseToSearch.toLowerCase()));
     }
 
 
