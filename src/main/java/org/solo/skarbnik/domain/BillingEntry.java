@@ -10,7 +10,7 @@ import java.util.Date;
 
 public class BillingEntry {
 
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("YYYY-MM-DD");
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
     private static final String SEPARATOR = ";";
 
     private Long id;

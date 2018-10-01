@@ -5,7 +5,6 @@ import org.solo.skarbnik.domain.Incomes;
 import org.solo.skarbnik.domain.Users;
 import org.solo.skarbnik.repositories.IncomesRepository;
 import org.solo.skarbnik.repositories.UserRepository;
-import org.solo.skarbnik.utils.PolishSignsRemover;
 
 import java.io.InputStream;
 import java.sql.Date;
@@ -18,6 +17,7 @@ import static org.solo.skarbnik.utils.Utils.toList;
 public class BillingImporter {
 
     private static final String POLISH_ENCODING = "ISO-8859-2";
+    private static final String UNMAPPED_USER = "$$UNMAPPED";
 
     private UserRepository userRepository;
     private IncomesRepository incomesRepository;
@@ -32,27 +32,19 @@ public class BillingImporter {
 
         Scanner scanner = new Scanner(inputStream, POLISH_ENCODING);
         skipUntilBillingReached(scanner);
-        parseBillings(scanner).forEach(entry -> perisitBillingEntry(allUsers, entry));
+        parseBillings(scanner).forEach(entry -> persistBillingEntry(allUsers, entry));
     }
 
-    private void perisitBillingEntry(List<Users> allUsers, BillingEntry entry) {
-        Optional<String> userOptional = mapUser(entry, allUsers);
-
-        userOptional.ifPresent(user ->
-                incomesRepository.save(new Incomes(user, entry.getAccountNumber(), entry.getAmount(), entry.getDescription(), new Date(entry.getOperationDate().getTime()))));
-
-        if (!userOptional.isPresent()) {
-            // log that could not map user
-        }
+    private void persistBillingEntry(List<Users> allUsers, BillingEntry entry) {
+        incomesRepository.save(new Incomes(mapUser(allUsers, entry), entry.getAccountNumber(), entry.getAmount(), entry.getDescription(), new Date(entry.getOperationDate().getTime())));
     }
 
-    private Optional<String> mapUser(BillingEntry entry, List<Users> allUsers) {
-
+    private String mapUser(List<Users> allUsers, BillingEntry entry) {
         return allUsers.stream()
                 .filter(users -> billingMatchesUser(entry, users))
                 .findFirst()
-                .map(Users::getUsername);
-
+                .map(Users::getUsername)
+                .orElse(UNMAPPED_USER);
     }
 
     private boolean billingMatchesUser(BillingEntry entry, Users users) {
