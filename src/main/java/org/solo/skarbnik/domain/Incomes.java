@@ -1,5 +1,6 @@
 package org.solo.skarbnik.domain;
 
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.domain.Persistable;
 
 import java.math.BigDecimal;
@@ -9,6 +10,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceConstructor;
 
 public class Incomes implements Persistable<Long> {
+
+    public static final String UNMAPPED_USER = "$$UNMAPPED";
 
     private @Id Long id;
     private String username;
@@ -59,5 +62,14 @@ public class Incomes implements Persistable<Long> {
 
     public Date getTransactiontime() {
         return transactiontime;
+    }
+
+    @Transient
+    public boolean userUnmapped(){
+        return UNMAPPED_USER.equals(username);
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

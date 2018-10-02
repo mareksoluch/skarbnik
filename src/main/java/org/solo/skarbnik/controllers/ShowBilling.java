@@ -1,17 +1,19 @@
 package org.solo.skarbnik.controllers;
 
 import org.solo.skarbnik.domain.Expenses;
+import org.solo.skarbnik.domain.Users;
 import org.solo.skarbnik.domain.UsersExpense;
 import org.solo.skarbnik.repositories.ExpensesRepository;
 import org.solo.skarbnik.repositories.IncomesRepository;
 import org.solo.skarbnik.domain.Incomes;
+import org.solo.skarbnik.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -30,10 +32,13 @@ import static org.solo.skarbnik.utils.Utils.toStream;
 public class ShowBilling {
 
     @Autowired
-    IncomesRepository repository;
+    private UserRepository userRepository;
 
     @Autowired
-    ExpensesRepository expensesRepository;
+    private IncomesRepository repository;
+
+    @Autowired
+    private ExpensesRepository expensesRepository;
 
     @GetMapping("/listbillings")
     public String listBillings(Model model) {
@@ -66,6 +71,35 @@ public class ShowBilling {
         model.addAttribute("billings", billingEntries);
         return "usersExpenses";
     }
+
+    @GetMapping("/mapUsersExpenses")
+    public String getMapUserToBilling(Model model) {
+        model.addAttribute("billings", unmappedBillings());
+        model.addAttribute("users", allUsers());
+
+        return "mapUsersExpenses";
+    }
+
+    private List<Incomes> unmappedBillings() {
+        return listBillings().stream()
+                .filter(Incomes::userUnmapped)
+                .collect(toList());
+    }
+
+    private List<String> allUsers() {
+        return toStream(userRepository.findAll()).map(Users::getUsername).collect(toList());
+    }
+
+    @PostMapping("/mapUsersExpenses")
+    public String postMapUserToBilling(@RequestParam("user") String user, @RequestParam("id") Long id, Model model) {
+        repository.findById(id)
+                .ifPresent(income -> {
+                    income.setUsername(user);
+                    repository.save(income);
+                });
+        return getMapUserToBilling(model);
+    }
+
 
     private List<Expenses> expensesSortedByDueDate() {
         return toStream(expensesRepository.findAll())

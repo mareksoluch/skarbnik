@@ -11,13 +11,13 @@ import java.sql.Date;
 import java.text.ParseException;
 import java.util.*;
 
+import static org.solo.skarbnik.domain.Incomes.UNMAPPED_USER;
 import static org.solo.skarbnik.utils.PolishSignsRemover.map;
 import static org.solo.skarbnik.utils.Utils.toList;
 
 public class BillingImporter {
 
     private static final String POLISH_ENCODING = "ISO-8859-2";
-    private static final String UNMAPPED_USER = "$$UNMAPPED";
 
     private UserRepository userRepository;
     private IncomesRepository incomesRepository;

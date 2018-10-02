@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+
+<table border="1">
+    <thead>
+    <tr>
+        <td>Użytkownik</td>
+        <td>Konto</td>
+        <td>Ilość</td>
+        <td>Opis</td>
+        <td>Data tranzakcji</td>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="billing: ${billings}">
+        <td>
+            <form action="#" th:action="@{/mapUsersExpenses}"
+                  method="post">
+                <select id="user" name="user">
+                    <option th:each="user : ${users}" th:value="${user}" th:text="${user}"></option>
+                </select>
+                <!--<input type="hidden" th:field="*{description}" th:value="*{id}"/>-->
+                <input type="hidden" th:value="${billing.id}" id="id" name="id" />
+                <input type="submit" value="Ustaw"/>
+            </form>
+        </td>
+        <td th:text="${billing.account}"></td>
+        <td th:text="${billing.qty}"></td>
+        <td th:text="${billing.description}"></td>
+        <td th:text="${billing.transactiontime}"></td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>
