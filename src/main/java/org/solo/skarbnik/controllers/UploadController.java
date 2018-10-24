@@ -28,14 +28,14 @@ public class UploadController {
                                    RedirectAttributes redirectAttributes) {
 
         if (file.isEmpty()) {
-            redirectAttributes.addFlashAttribute("message", "Wybierz plik do zaladowania");
+            redirectAttributes.addFlashAttribute("message", "Wybierz plik do załadowania");
             return "upload";
         }
 
         try {
             billingImporter.importBilling(file.getInputStream());
             redirectAttributes.addFlashAttribute("message",
-                    "Udało sięzaładować plik '" + file.getOriginalFilename() + "'");
+                    "Udało się załadować plik '" + file.getOriginalFilename() + "'");
 
         } catch (IOException | ParseException e) {
             e.printStackTrace();

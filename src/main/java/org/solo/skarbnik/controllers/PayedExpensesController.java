@@ -6,6 +6,9 @@ import org.solo.skarbnik.domain.UsersExpense;
 import org.solo.skarbnik.repositories.ExpensesRepository;
 import org.solo.skarbnik.repositories.IncomesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +26,8 @@ import static java.util.stream.Collectors.*;
 @Controller
 public class PayedExpensesController {
 
+    private static final String ADMIN = "ROLE_ADMIN";
+
     @Autowired
     private IncomesRepository incomesRepository;
 
@@ -36,6 +41,25 @@ public class PayedExpensesController {
         model.addAttribute("expenses", expenses);
         model.addAttribute("usersExpenses", userExpenses(expenses));
         return "payedExpensesReport";
+    }
+
+    @GetMapping("/paymentsReport")
+    public String listPayments(Model model) {
+        model.addAttribute("payments", listPayments());
+        return "paymentsReport";
+    }
+
+    private List<Incomes> listPayments() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return isAdmin(auth)
+                ? incomesRepository.findEnabledAndMapped()
+                : incomesRepository.findEnabledByUsername(auth.getName());
+    }
+
+    private boolean isAdmin(Authentication auth) {
+        return auth.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch(ADMIN::equals);
     }
 
     private List<Expenses> expensesSortedByDueDate() {
@@ -66,7 +90,7 @@ public class PayedExpensesController {
 
 
     private Map<String, List<UsersExpense>> userExpenses(List<Expenses> expenses) {
-        Map<String, List<Incomes>> incomesForUsers = incomesRepository.findEnabledAndMapped().stream()
+        Map<String, List<Incomes>> incomesForUsers = listPayments().stream()
                 .collect(groupingBy(Incomes::getUsername));
 
         return mapValues(incomesForUsers, entry -> toUsersExpenses(expenses, sumQty(entry.getValue())));

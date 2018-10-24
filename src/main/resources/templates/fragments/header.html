@@ -19,13 +19,13 @@
                 <li>
                     <a href="#" th:href="@{/}">Dom</a>
                 </li>
-                <li>
+                <li sec:authorize="hasRole('ADMIN')">
                     <a href="#" th:href="@{/upload}">Załaduj billingi</a>
                 </li>
                 <li>
                     <a href="#" th:href="@{/paymentsReport}">Raport billingów</a>
                 </li>
-                <li>
+                <li sec:authorize="hasRole('ADMIN')">
                     <a href="#" th:href="@{/expenses}">Wydatki</a>
                 </li>
                 <li>
