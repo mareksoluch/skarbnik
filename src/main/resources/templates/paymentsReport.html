@@ -24,14 +24,14 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="billing : ${billings}">
-            <td th:text="${billing.username}"></td>
-            <td th:text="${billing.account}"></td>
-            <td th:text="${billing.qty}"></td>
-            <td th:text="${billing.title}"></td>
-            <td th:text="${billing.issuer}"></td>
-            <td th:text="${billing.description}"></td>
-            <td th:text="${billing.transactionTime}"></td>
+        <tr th:each="payment : ${payments}">
+            <td th:text="${payment.username}"></td>
+            <td th:text="${payment.account}"></td>
+            <td th:text="${payment.qty}"></td>
+            <td th:text="${payment.title}"></td>
+            <td th:text="${payment.issuer}"></td>
+            <td th:text="${payment.description}"></td>
+            <td th:text="${payment.transactionTime}"></td>
         </tr>
         </tbody>
     </table>

@@ -1,6 +1,5 @@
 package org.solo.skarbnik.billinginmport;
 
-import org.solo.skarbnik.domain.BillingEntry;
 import org.solo.skarbnik.domain.Incomes;
 import org.solo.skarbnik.domain.Users;
 import org.solo.skarbnik.repositories.IncomesRepository;
@@ -13,7 +12,6 @@ import java.util.*;
 
 import static org.solo.skarbnik.domain.Incomes.UNMAPPED_USER;
 import static org.solo.skarbnik.utils.PolishSignsRemover.map;
-import static org.solo.skarbnik.utils.Utils.toList;
 
 public class BillingImporter {
 
@@ -28,8 +26,8 @@ public class BillingImporter {
     }
 
     public void importBilling(InputStream inputStream) throws ParseException {
-        List<Users> allUsers = toList(userRepository.findAll());
-        List<Incomes> allIncomes = toList(incomesRepository.findAll());
+        List<Users> allUsers = userRepository.findAll();
+        List<Incomes> allIncomes = incomesRepository.findAll();
 
         Scanner scanner = new Scanner(inputStream, POLISH_ENCODING);
         skipUntilBillingReached(scanner);

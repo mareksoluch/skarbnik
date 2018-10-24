@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.List;
 
-import static org.solo.skarbnik.utils.Utils.toList;
-
 @Controller
 public class ExpenseController {
 
@@ -28,7 +26,7 @@ public class ExpenseController {
     }
 
     private List<Expenses> listExpenses() {
-        return toList(expensesRepository.findAll());
+        return expensesRepository.findAll();
     }
 
     @RequestMapping(value="/expenses", method=RequestMethod.POST)

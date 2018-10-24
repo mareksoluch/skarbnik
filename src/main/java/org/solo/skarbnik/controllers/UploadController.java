@@ -28,19 +28,19 @@ public class UploadController {
                                    RedirectAttributes redirectAttributes) {
 
         if (file.isEmpty()) {
-            redirectAttributes.addFlashAttribute("message", "Please select a file to upload");
+            redirectAttributes.addFlashAttribute("message", "Wybierz plik do zaladowania");
             return "upload";
         }
 
         try {
             billingImporter.importBilling(file.getInputStream());
             redirectAttributes.addFlashAttribute("message",
-                    "You successfully uploaded '" + file.getOriginalFilename() + "'");
+                    "Udało sięzaładować plik '" + file.getOriginalFilename() + "'");
 
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
-        return billingImporter.hasUnmappedUsers() ? "redirect:/mapUsersExpenses" : "redirect:/";
+        return billingImporter.hasUnmappedUsers() ? "redirect:/mapUsersToPayments" : "redirect:/";
     }
 
 }

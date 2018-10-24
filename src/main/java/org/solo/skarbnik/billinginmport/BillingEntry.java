@@ -1,4 +1,4 @@
-package org.solo.skarbnik.domain;
+package org.solo.skarbnik.billinginmport;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -8,12 +8,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
-public class BillingEntry {
+class BillingEntry {
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
     private static final String SEPARATOR = ";";
 
-    private Long id;
     private final Date operationDate;
     private final Date bookingDate;
     private final String description;
@@ -23,7 +22,7 @@ public class BillingEntry {
     private final BigDecimal amount;
     private final BigDecimal balanceAfterOperation;
 
-    public BillingEntry(String csv) throws ParseException {
+    BillingEntry(String csv) throws ParseException {
         String[] split = csv.split(SEPARATOR);
         operationDate = DATE_FORMAT.parse(removeQuotes(split[0]));
         bookingDate = DATE_FORMAT.parse(removeQuotes(split[1]));
@@ -33,18 +32,6 @@ public class BillingEntry {
         accountNumber = removeQuotes(split[5]);
         amount = parse(removeQuotes(split[6]));
         balanceAfterOperation = parse(removeQuotes(split[7]));
-    }
-
-    public BillingEntry(Long id, Date operationDate, Date bookingDate, String description, String title, String issuer, String accountNumber, BigDecimal amount, BigDecimal balanceAfterOperation) {
-        this.id = id;
-        this.operationDate = operationDate;
-        this.bookingDate = bookingDate;
-        this.description = description;
-        this.title = title;
-        this.issuer = issuer;
-        this.accountNumber = accountNumber;
-        this.amount = amount;
-        this.balanceAfterOperation = balanceAfterOperation;
     }
 
     private String removeQuotes(String source) {
@@ -61,43 +48,38 @@ public class BillingEntry {
         return (BigDecimal) format.parse(source);
     }
 
-    public Date getOperationDate() {
+    Date getOperationDate() {
         return operationDate;
     }
 
-    public Date getBookingDate() {
-        return bookingDate;
-    }
-
-    public String getDescription() {
+    String getDescription() {
         return description;
     }
 
-    public String getTitle() {
+    String getTitle() {
         return title;
     }
 
-    public String getIssuer() {
+    String getIssuer() {
         return issuer;
     }
 
-    public String getAccountNumber() {
+    String getAccountNumber() {
         return accountNumber;
     }
 
-    public BigDecimal getAmount() {
+    BigDecimal getAmount() {
         return amount;
     }
 
-    public BigDecimal getBalanceAfterOperation() {
+    BigDecimal getBalanceAfterOperation() {
         return balanceAfterOperation;
     }
 
     @Override
     public String toString() {
         return "BillingEntry{" +
-                "id=" + id +
-                ", operationDate=" + operationDate +
+                "operationDate=" + operationDate +
                 ", bookingDate=" + bookingDate +
                 ", description='" + description + '\'' +
                 ", title='" + title + '\'' +
@@ -108,11 +90,7 @@ public class BillingEntry {
                 '}';
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public static boolean isParsable(String line) {
+    static boolean isParsable(String line) {
         return line == null || line.split(SEPARATOR).length >= 7;
     }
 }

@@ -1,6 +1,7 @@
 package org.solo.skarbnik.repositories;
 
 import org.solo.skarbnik.domain.Incomes;
+import org.solo.skarbnik.domain.Users;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -17,4 +18,7 @@ public interface IncomesRepository extends CrudRepository<Incomes, Long> {
 
     @Query("SELECT * FROM incomes WHERE enabled = true AND username <> '$$UNMAPPED'")
     List<Incomes> findEnabledAndMapped();
+
+    @Override
+    List<Incomes> findAll();
 }

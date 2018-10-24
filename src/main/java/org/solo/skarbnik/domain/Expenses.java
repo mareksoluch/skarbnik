@@ -82,7 +82,7 @@ public class Expenses  implements Persistable<Long> {
         return new UsersExpense(this, true);
     }
 
-    public UsersExpense unpayed(){
+    public UsersExpense unpaid(){
         return new UsersExpense(this, false);
     }
 }
