@@ -29,14 +29,18 @@ public class BillingImporter {
 
     public void importBilling(InputStream inputStream) throws ParseException {
         List<Users> allUsers = toList(userRepository.findAll());
+        List<Incomes> allIncomes = toList(incomesRepository.findAll());
 
         Scanner scanner = new Scanner(inputStream, POLISH_ENCODING);
         skipUntilBillingReached(scanner);
-        parseBillings(scanner).forEach(entry -> persistBillingEntry(allUsers, entry));
+        parseBillings(scanner).forEach(entry -> persistBillingEntry(allUsers, allIncomes, entry));
     }
 
-    private void persistBillingEntry(List<Users> allUsers, BillingEntry entry) {
-        incomesRepository.save(new Incomes(mapUser(allUsers, entry), entry.getAccountNumber(), entry.getAmount(), entry.getDescription(), new Date(entry.getOperationDate().getTime())));
+    private void persistBillingEntry(List<Users> allUsers, List<Incomes> allIncomes, BillingEntry entry) {
+        Incomes income = new Incomes(mapUser(allUsers, entry), entry.getAccountNumber(), entry.getAmount(), entry.getDescription(), new Date(entry.getOperationDate().getTime()), entry.getTitle(), entry.getIssuer());
+        if (!allIncomes.contains(income)) {
+            incomesRepository.save(income);
+        }
     }
 
     private String mapUser(List<Users> allUsers, BillingEntry entry) {
@@ -79,5 +83,10 @@ public class BillingImporter {
         return line.startsWith("#Data operacji");
     }
 
+
+    public boolean hasUnmappedUsers() {
+        return incomesRepository.findEnabled().stream()
+                .anyMatch(Incomes::userUnmapped);
+    }
 }
 

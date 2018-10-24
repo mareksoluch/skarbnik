@@ -56,8 +56,11 @@ CREATE TABLE incomes (
   username varchar(50) REFERENCES users(username),
   account varchar(50) NOT NULL,
   qty decimal NOT NULL,
+  title varchar(256),
+  issuer varchar(256),
   description varchar(256),
-  transactiontime timestamp not null,
+  transactionTime timestamp not null,
+  enabled boolean not null,
   PRIMARY KEY (id)
 );
 

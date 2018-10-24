@@ -1,38 +1,58 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Załaduj billingi</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link href="/css/bootstrap.min.css" rel="stylesheet" media="screen" th:href="@{/css/bootstrap.min.css}"/>
+    <link href="/css/core.css" rel="stylesheet" media="screen" th:href="@{/css/core.css}" />
+    <script src="/js/jquery.min.js" th:src="@{/js/jquery.min.js}"></script>
+    <script src="/js/bootstrap.min.js" th:src="@{/js/bootstrap.min.js}"></script>
+</head>
 <body>
+<div th:replace="fragments/header :: header">&nbsp;</div>
+<div class="container">
+    <div th:if="${message}">
+        <h2 th:text="${message}"/>
+    </div>
 
-
-<table border="1">
-    <thead>
-    <tr>
-        <td>Użytkownik</td>
-        <td>Konto</td>
-        <td>Ilość</td>
-        <td>Opis</td>
-        <td>Data tranzakcji</td>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="billing: ${billings}">
-        <td>
-            <form action="#" th:action="@{/mapUsersExpenses}"
-                  method="post">
-                <select id="user" name="user">
-                    <option th:each="user : ${users}" th:value="${user}" th:text="${user}"></option>
-                </select>
-                <!--<input type="hidden" th:field="*{description}" th:value="*{id}"/>-->
-                <input type="hidden" th:value="${billing.id}" id="id" name="id" />
-                <input type="submit" value="Ustaw"/>
-            </form>
-        </td>
-        <td th:text="${billing.account}"></td>
-        <td th:text="${billing.qty}"></td>
-        <td th:text="${billing.description}"></td>
-        <td th:text="${billing.transactiontime}"></td>
-    </tr>
-    </tbody>
-</table>
-
+    <table border="1">
+        <thead>
+        <tr>
+            <td>Użytkownik</td>
+            <td>Konto</td>
+            <td>Ilość</td>
+            <td>Tytuł</td>
+            <td>Przelewający</td>
+            <td>Opis</td>
+            <td>Data tranzakcji</td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="billing: ${billings}">
+            <td>
+                <form action="#" th:action="@{/mapUsersExpenses}"
+                      method="post">
+                    <select id="user" name="user">
+                        <option th:each="user : ${users}" th:value="${user}" th:text="${user}"></option>
+                    </select>
+                    <input type="hidden" th:value="${billing.id}" id="id" name="id" />
+                    <input type="submit" value="Ustaw"/>
+                </form>
+                <form action="#" th:action="@{/disableIncome}"
+                      method="post">
+                    <input type="hidden" th:value="${billing.id}" id="id" name="id" />
+                    <input type="submit" value="Wyłącz"/>
+                </form>
+            </td>
+            <td th:text="${billing.account}"></td>
+            <td th:text="${billing.qty}"></td>
+            <td th:text="${billing.title}"></td>
+            <td th:text="${billing.issuer}"></td>
+            <td th:text="${billing.description}"></td>
+            <td th:text="${billing.transactionTime}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
 </body>
 </html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link href="/css/bootstrap.min.css" rel="stylesheet" media="screen" th:href="@{/resources/css/bootstrap.min.css}"/>
+</head>
+<body>
+<nav class="navbar navbar-inverse navbar-fixed-top" th:fragment="header">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">Skarbnik</a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li>
+                    <a href="#" th:href="@{/}">Dom</a>
+                </li>
+                <li>
+                    <a href="#" th:href="@{/upload}">Załaduj billingi</a>
+                </li>
+                <li>
+                    <a href="#" th:href="@{/listbillings}">Raport billingów</a>
+                </li>
+                <li>
+                    <a href="#" th:href="@{/expenses}">Wydatki</a>
+                </li>
+                <li>
+                    <a href="#" th:href="@{/usersExpenses}">Raport Wydatków</a>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="/logout" th:href="@{#}" onclick="$('#form').submit();">
+                        <span aria-hidden="true"></span>&nbsp;Logout [[${#httpServletRequest.remoteUser}]]
+                    </a>
+                    <form style="visibility: hidden" id="form" method="post" action="#" th:action="@{/logout}"></form>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+</body>
+</html>

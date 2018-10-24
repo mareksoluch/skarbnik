@@ -25,7 +25,6 @@ import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
-import static org.solo.skarbnik.utils.Utils.toList;
 import static org.solo.skarbnik.utils.Utils.toStream;
 
 @Controller
@@ -81,7 +80,7 @@ public class ShowBilling {
     }
 
     private List<Incomes> unmappedBillings() {
-        return listBillings().stream()
+        return repository.findEnabled().stream()
                 .filter(Incomes::userUnmapped)
                 .collect(toList());
     }
@@ -95,6 +94,16 @@ public class ShowBilling {
         repository.findById(id)
                 .ifPresent(income -> {
                     income.setUsername(user);
+                    repository.save(income);
+                });
+        return getMapUserToBilling(model);
+    }
+
+    @PostMapping("/disableIncome")
+    public String disableIncome(@RequestParam("id") Long id, Model model) {
+        repository.findById(id)
+                .ifPresent(income -> {
+                    income.disable();
                     repository.save(income);
                 });
         return getMapUserToBilling(model);
@@ -130,8 +139,8 @@ public class ShowBilling {
     private List<Incomes> listBillings() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return isAdmin(auth)
-                ? toList(repository.findAll())
-                : toList(repository.findByUsername(auth.getName()));
+                ? repository.findEnabledAndMapped()
+                : repository.findEnabledByUsername(auth.getName());
     }
 
     private boolean isAdmin(Authentication auth) {

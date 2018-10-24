@@ -23,13 +23,13 @@ public class UploadController {
         return "upload";
     }
 
-    @PostMapping("/upload") // //new annotation since 4.3
+    @PostMapping("/upload")
     public String singleFileUpload(@RequestParam("file") MultipartFile file,
                                    RedirectAttributes redirectAttributes) {
 
         if (file.isEmpty()) {
             redirectAttributes.addFlashAttribute("message", "Please select a file to upload");
-            return "redirect:uploadStatus";
+            return "upload";
         }
 
         try {
@@ -40,13 +40,7 @@ public class UploadController {
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
-
-        return "redirect:/uploadStatus";
-    }
-
-    @GetMapping("/uploadStatus")
-    public String uploadStatus() {
-        return "uploadStatus";
+        return billingImporter.hasUnmappedUsers() ? "redirect:/mapUsersExpenses" : "redirect:/";
     }
 
 }

@@ -9,6 +9,12 @@ import java.util.List;
 
 public interface IncomesRepository extends CrudRepository<Incomes, Long> {
 
-    @Query("SELECT * FROM incomes WHERE userName  = :userName")
-    List<Incomes> findByUsername(@Param("userName") String userName);
+    @Query("SELECT * FROM incomes WHERE enabled = true AND userName  = :userName")
+    List<Incomes> findEnabledByUsername(@Param("userName") String userName);
+
+    @Query("SELECT * FROM incomes WHERE enabled  = true")
+    List<Incomes> findEnabled();
+
+    @Query("SELECT * FROM incomes WHERE enabled = true AND username <> '$$UNMAPPED'")
+    List<Incomes> findEnabledAndMapped();
 }
