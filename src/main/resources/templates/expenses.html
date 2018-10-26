@@ -16,16 +16,16 @@
     </div>
     <form action="#" th:action="@{/expenses}"
           th:object="${newExpense}" method="post">
-        Description:
+        Opis:
         <input type="text" th:field="*{description}" />
         <br/>
-        Quantity:
+        Wysokość:
         <input type="text" th:field="*{qty}" />
         <br/>
-        Due date:
+        Data płatności:
         <input type="date" th:field="*{dueDateString}" />
         <br/>
-        <input type="submit" value="Add" />
+        <input type="submit" value="Dodaj" />
     </form>
 
     <br/>

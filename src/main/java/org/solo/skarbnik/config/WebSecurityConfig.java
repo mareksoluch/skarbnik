@@ -18,9 +18,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     DataSource datasource;
 
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        PasswordEncoder passwordEncoder = NoOpPasswordEncoder.getInstance();
         auth.jdbcAuthentication().dataSource(datasource).passwordEncoder(passwordEncoder);
     }
 
@@ -28,8 +30,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+                .anonymous()
+                .and()
                 .authorizeRequests()
 
+                .antMatchers("/resetPassword", "/passwordResetSuccess").permitAll()
+                .and()
+                .authorizeRequests()
                 .antMatchers("/upload", "/mapUsersToPayments", "/expenses")
                 .hasRole("ADMIN")
 
@@ -40,6 +47,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .logout()
                 .permitAll();
+
 
     }
 

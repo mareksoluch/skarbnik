@@ -38,6 +38,7 @@ create table users (
     password varchar(120) not null,
     childName varchar(120) not null,
     childSurname varchar(120) not null,
+    email varchar(120) not null,
     enabled boolean not null
 );
 
