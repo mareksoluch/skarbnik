@@ -8,14 +8,16 @@ public class Users implements Persistable<String> {
     private final String childName;
     private final String childSurname;
     private final String email;
+    private final boolean enabled;
     private String password;
 
-    public Users(String username, String childName, String childSurname, String email, String password) {
+    public Users(String username, String childName, String childSurname, String email, String password, boolean enabled) {
         this.username = username;
         this.childName = childName;
         this.childSurname = childSurname;
         this.email = email;
         this.password = password;
+        this.enabled = enabled;
     }
 
     public String getUsername() {
@@ -50,5 +52,9 @@ public class Users implements Persistable<String> {
     @Override
     public boolean isNew() {
         return username == null;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
     }
 }

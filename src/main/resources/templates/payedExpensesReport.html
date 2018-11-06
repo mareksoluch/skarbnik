@@ -27,7 +27,18 @@
         <tr th:each="user: ${usersExpenses.keySet()}">
             <td th:text="${user}"></td>
             <th:block th:each="usersExpense : ${usersExpenses.get(user)}">
-                <td th:text="${usersExpense.payed}"></td>
+                <td>
+                    <div th:switch="${usersExpense.payed}" style="align:center">
+                        <span th:case="${false}">
+                            <img th:src="@{/icons/false.png}" style="width:16px;height:16px"/>
+                            <span th:text="'Saldo: ' + ${usersExpense.leftToPay} + ' PLN'"></span>
+                        </span>
+                        <span th:case="${true}">
+                            <img th:src="@{/icons/true.png}" style="width:16px;height:16px"/>
+                        </span>
+                        <span th:case="*">Should never happen, but who knows...</span>
+                    </div>
+                </td>
             </th:block>
         </tr>
         </tbody>

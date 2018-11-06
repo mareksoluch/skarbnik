@@ -79,10 +79,10 @@ public class Expenses  implements Persistable<Long> {
     }
 
     public UsersExpense payed(){
-        return new UsersExpense(this, true);
+        return new UsersExpense(this, true, BigDecimal.ZERO);
     }
 
-    public UsersExpense unpaid(){
-        return new UsersExpense(this, false);
+    public UsersExpense unpaid(BigDecimal leftToPay){
+        return new UsersExpense(this, false, leftToPay);
     }
 }

@@ -2,9 +2,11 @@ package org.solo.skarbnik.controllers;
 
 import org.solo.skarbnik.domain.Expenses;
 import org.solo.skarbnik.domain.Incomes;
+import org.solo.skarbnik.domain.Users;
 import org.solo.skarbnik.domain.UsersExpense;
 import org.solo.skarbnik.repositories.ExpensesRepository;
 import org.solo.skarbnik.repositories.IncomesRepository;
+import org.solo.skarbnik.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -14,12 +16,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 import static java.math.BigDecimal.ZERO;
+import static java.util.Collections.emptyList;
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.*;
 
@@ -33,6 +34,9 @@ public class PayedExpensesController {
 
     @Autowired
     private ExpensesRepository expensesRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @GetMapping("/payedExpensesReport")
     public String usersExpenses(Model model) {
@@ -78,14 +82,14 @@ public class PayedExpensesController {
         List<UsersExpense> usersExpenses = new ArrayList<>(expenses.size());
         for (Expenses expense : expenses) {
             totalIncome = totalIncome.subtract(expense.getQty());
-            UsersExpense usersExpense = gtZero(totalIncome) ? expense.payed() : expense.unpaid();
+            UsersExpense usersExpense = gtEqZero(totalIncome) ? expense.payed() : expense.unpaid(totalIncome);
             usersExpenses.add(usersExpense);
         }
         return usersExpenses;
     }
 
-    private boolean gtZero(BigDecimal totalIncome) {
-        return totalIncome.compareTo(ZERO) > 0;
+    private boolean gtEqZero(BigDecimal totalIncome) {
+        return totalIncome.compareTo(ZERO) >= 0;
     }
 
 
@@ -93,7 +97,19 @@ public class PayedExpensesController {
         Map<String, List<Incomes>> incomesForUsers = listPayments().stream()
                 .collect(groupingBy(Incomes::getUsername));
 
-        return mapValues(incomesForUsers, entry -> toUsersExpenses(expenses, sumQty(entry.getValue())));
+        Map<String, List<Incomes>> allUsersIncomes = fillInUsersWithNoPayments(incomesForUsers);
+
+        return mapValues(allUsersIncomes, entry -> toUsersExpenses(expenses, sumQty(entry.getValue())));
+    }
+
+    private Map<String, List<Incomes>> fillInUsersWithNoPayments(Map<String, List<Incomes>> incomesForUsers) {
+        Map<String, List<Incomes>> result = new HashMap<>(incomesForUsers);
+        userRepository.findAll().stream()
+                .filter(Users::isEnabled)
+                .filter(user -> !result.containsKey(user.getUsername()))
+                .forEach(user -> result.put(user.getUsername(), emptyList()));
+
+        return result;
     }
 
     private Map<String, List<UsersExpense>> mapValues(Map<String, List<Incomes>> incomesForUsers, Function<Map.Entry<String, List<Incomes>>, List<UsersExpense>> valuesMapping) {

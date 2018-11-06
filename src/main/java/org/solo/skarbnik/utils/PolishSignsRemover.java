@@ -39,7 +39,7 @@ public class PolishSignsRemover {
     }
 
     public static void main(String[] args) throws Exception {
-        BufferedReader bufferedReader = new BufferedReader(new FileReader("/Users/marek.soluch/tmp/uuu"));
+        BufferedReader bufferedReader = new BufferedReader(new FileReader("/Users/marek/git/skarbnik/src/main/resources/users.sql"));
         String line = null;
         do {
             line = bufferedReader.readLine();
