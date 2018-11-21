@@ -36,7 +36,6 @@
                         </span>
                         <span th:case="${true}">
                             <img th:src="@{/icons/true.png}" style="width:16px;height:16px"/>
-                            <span th:text="'Saldo: ' + ${usersExpense.leftToPay} + ' PLN'"></span>
                         </span>
                         <span th:case="*">Should never happen, but who knows...</span>
                     </div>
