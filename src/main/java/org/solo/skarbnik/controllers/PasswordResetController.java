@@ -29,6 +29,10 @@ public class PasswordResetController {
     @RequestMapping(value = "/resetPassword", method = RequestMethod.POST)
     public String resetPassword(@ModelAttribute PasswordReset passwordReset, Model model) {
 
+        if(passwordReset.isGdpr()){
+            return resetFail(model, "Wymagana zgoda na przetwarzanie danych zgodnie z polityką ptywatności.");
+        }
+
         if (passwordReset.passwordIncorrect()) {
             return resetFail(model, "Hasła nie są identyczne");
         }

@@ -6,6 +6,7 @@ public class PasswordReset {
     private String childName;
     private String childSurname;
     private String email;
+    private boolean gdpr;
 
     public boolean passwordCorrect() {
         return password != null && !"".equals(password) && password.equals(passwordRepeat);
@@ -53,5 +54,13 @@ public class PasswordReset {
 
     public String getEmail() {
         return email;
+    }
+
+    public boolean isGdpr() {
+        return gdpr;
+    }
+
+    public void setGdpr(boolean gdpr) {
+        this.gdpr = gdpr;
     }
 }
