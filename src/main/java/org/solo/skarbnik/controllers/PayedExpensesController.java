@@ -1,9 +1,6 @@
 package org.solo.skarbnik.controllers;
 
-import org.solo.skarbnik.domain.Expenses;
-import org.solo.skarbnik.domain.Incomes;
-import org.solo.skarbnik.domain.Users;
-import org.solo.skarbnik.domain.UsersExpense;
+import org.solo.skarbnik.domain.*;
 import org.solo.skarbnik.repositories.ExpensesRepository;
 import org.solo.skarbnik.repositories.IncomesRepository;
 import org.solo.skarbnik.repositories.UserRepository;
@@ -78,14 +75,20 @@ public class PayedExpensesController {
                 .reduce(ZERO, BigDecimal::add);
     }
 
-    private List<UsersExpense> toUsersExpenses(List<Expenses> expenses, BigDecimal totalIncome) {
+    private ExpensesWithBalance toUsersExpenses(List<Expenses> expenses, final BigDecimal totalIncome) {
         List<UsersExpense> usersExpenses = new ArrayList<>(expenses.size());
+        BigDecimal incomeLeft = totalIncome;
         for (Expenses expense : expenses) {
-            totalIncome = totalIncome.subtract(expense.getQty());
-            UsersExpense usersExpense = gtEqZero(totalIncome) ? expense.payed() : expense.unpaid(totalIncome);
+            incomeLeft = incomeLeft.subtract(expense.getQty());
+            UsersExpense usersExpense = gtEqZero(incomeLeft) ? expense.payed() : expense.unpaid(incomeLeft);
             usersExpenses.add(usersExpense);
         }
-        return usersExpenses;
+        BigDecimal balance = expenses.stream()
+                .map(Expenses::getQty)
+                .reduce(BigDecimal::add)
+                .map(totalIncome::subtract)
+                .get();
+        return new ExpensesWithBalance(usersExpenses, balance);
     }
 
     private boolean gtEqZero(BigDecimal totalIncome) {
@@ -93,7 +96,7 @@ public class PayedExpensesController {
     }
 
 
-    private Map<String, List<UsersExpense>> userExpenses(List<Expenses> expenses) {
+    private Map<String, ExpensesWithBalance> userExpenses(List<Expenses> expenses) {
         Map<String, List<Incomes>> incomesForUsers = listPayments().stream()
                 .collect(groupingBy(Incomes::getUsername));
 
@@ -112,7 +115,7 @@ public class PayedExpensesController {
         return result;
     }
 
-    private Map<String, List<UsersExpense>> mapValues(Map<String, List<Incomes>> incomesForUsers, Function<Map.Entry<String, List<Incomes>>, List<UsersExpense>> valuesMapping) {
+    private Map<String, ExpensesWithBalance> mapValues(Map<String, List<Incomes>> incomesForUsers, Function<Map.Entry<String, List<Incomes>>, ExpensesWithBalance> valuesMapping) {
         return incomesForUsers
                 .entrySet().stream()
                 .collect(toMap(Map.Entry::getKey, valuesMapping));

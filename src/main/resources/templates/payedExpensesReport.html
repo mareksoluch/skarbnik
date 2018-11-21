@@ -21,12 +21,13 @@
             <th:block th:each="expense : ${expenses}">
                 <th th:text="${expense.description}"></th>
             </th:block>
+            <th>Saldo</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="user: ${usersExpenses.keySet()}">
             <td th:text="${user}"></td>
-            <th:block th:each="usersExpense : ${usersExpenses.get(user)}">
+            <th:block th:each="usersExpense : ${usersExpenses.get(user).usersExpenses}">
                 <td>
                     <div th:switch="${usersExpense.payed}" style="align:center">
                         <span th:case="${false}">
@@ -41,6 +42,7 @@
                     </div>
                 </td>
             </th:block>
+            <td th:text="${usersExpenses.get(user).balance}"></td>
         </tr>
         </tbody>
     </table>
