@@ -1,20 +1,3 @@
-CREATE USER solo WITH
-  LOGIN
-  NOSUPERUSER
-  INHERIT
-  CREATEDB
-  CREATEROLE
-  NOREPLICATION;
-
--- GRANT solo TO admin;
-
-
-CREATE DATABASE skarbnik OWNER solo;
-
-\c skarbnik
-
-ALTER USER solo PASSWORD 'password';
-
 CREATE TABLE expenses (
   id SERIAL,
   qty decimal NOT NULL,

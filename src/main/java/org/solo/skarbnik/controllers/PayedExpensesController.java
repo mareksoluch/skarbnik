@@ -18,6 +18,7 @@ import java.util.function.Function;
 
 import static java.math.BigDecimal.ZERO;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.*;
 
@@ -100,7 +101,10 @@ public class PayedExpensesController {
         Map<String, List<Incomes>> incomesForUsers = listPayments().stream()
                 .collect(groupingBy(Incomes::getUsername));
 
-        Map<String, List<Incomes>> allUsersIncomes = fillInUsersWithNoPayments(incomesForUsers);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Map<String, List<Incomes>> allUsersIncomes = isAdmin(auth)
+                ? fillInUsersWithNoPayments(incomesForUsers)
+                : incomesForUsers;
 
         return mapValues(allUsersIncomes, entry -> toUsersExpenses(expenses, sumQty(entry.getValue())));
     }
