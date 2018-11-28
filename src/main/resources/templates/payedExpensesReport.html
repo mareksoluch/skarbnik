@@ -19,7 +19,7 @@
         <tr>
             <th>Użytkownik</th>
             <th:block th:each="expense : ${expenses}">
-                <th th:text="${expense.description} + ' płatne do ' {expense.dueDate}"></th>
+                <th th:text="${expense.description}"></th>
             </th:block>
             <th>Saldo</th>
         </tr>
