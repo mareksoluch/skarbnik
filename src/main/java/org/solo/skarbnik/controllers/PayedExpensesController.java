@@ -18,7 +18,6 @@ import java.util.function.Function;
 
 import static java.math.BigDecimal.ZERO;
 import static java.util.Collections.emptyList;
-import static java.util.Collections.emptyMap;
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.*;
 
