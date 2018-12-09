@@ -25,6 +25,9 @@
         Data płatności:
         <input type="date" th:field="*{dueDateString}" />
         <br/>
+        Słowa kluczowe:
+        <input type="date" th:field="*{keywords}" />
+        <br/>
         <input type="submit" value="Dodaj" />
     </form>
 
@@ -33,9 +36,10 @@
     <table border="1">
         <thead>
         <tr>
-            <td>description</td>
-            <td>qty</td>
-            <td>dueDate</td>
+            <td>Opis</td>
+            <td>Wysokość</td>
+            <td>Data płatności</td>
+            <td>Słowa kluczowe</td>
         </tr>
         </thead>
         <tbody>
@@ -43,6 +47,7 @@
             <td th:text="${expense.description}"></td>
             <td th:text="${expense.qty}"></td>
             <td th:text="${expense.dueDate}"></td>
+            <td th:text="${expense.keywords}"></td>
         </tr>
         </tbody>
     </table>

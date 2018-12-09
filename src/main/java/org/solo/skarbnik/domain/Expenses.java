@@ -16,20 +16,22 @@ public class Expenses  implements Persistable<Long> {
     BigDecimal qty;
     String description;
     Date dueDate;
+    String keywords;
 
     public Expenses() {
     }
 
     @PersistenceConstructor
-    public Expenses(Long id, BigDecimal qty, String description, Date dueDate) {
+    public Expenses(Long id, BigDecimal qty, String description, Date dueDate, String keywords) {
         this.id = id;
         this.qty = qty;
         this.description = description;
         this.dueDate = dueDate;
+        this.keywords = keywords;
     }
 
-    public Expenses(BigDecimal qty, String description, Date dueDate) {
-        this(null, qty, description, dueDate);
+    public Expenses(BigDecimal qty, String description, Date dueDate, String keywords) {
+        this(null, qty, description, dueDate, keywords);
     }
 
     @Override
@@ -84,5 +86,13 @@ public class Expenses  implements Persistable<Long> {
 
     public UsersExpense unpaid(BigDecimal leftToPay){
         return new UsersExpense(this, false, leftToPay);
+    }
+
+    public String getKeywords() {
+        return keywords;
+    }
+
+    public void setKeywords(String keywords) {
+        this.keywords = keywords;
     }
 }
