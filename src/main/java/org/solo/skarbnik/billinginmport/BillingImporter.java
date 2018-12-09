@@ -35,7 +35,9 @@ public class BillingImporter {
     }
 
     private void persistBillingEntry(List<Users> allUsers, List<Incomes> allIncomes, BillingEntry entry) {
-        Incomes income = new Incomes(mapUser(allUsers, entry), entry.getAccountNumber(), entry.getAmount(), entry.getDescription(), new Date(entry.getOperationDate().getTime()), entry.getTitle(), entry.getIssuer());
+        Incomes income = new Incomes(mapUser(allUsers, entry), entry.getAccountNumber(), entry.getAmount(),
+                entry.getDescription(), new Date(entry.getOperationDate().getTime()), entry.getTitle(),
+                entry.getIssuer(), null, null, null, null, null);
         if (!allIncomes.contains(income)) {
             incomesRepository.save(income);
         }
