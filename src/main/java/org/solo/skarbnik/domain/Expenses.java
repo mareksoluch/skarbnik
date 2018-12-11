@@ -92,6 +92,14 @@ public class Expenses  implements Persistable<Long> {
         return keywords;
     }
 
+    public boolean hasKeywords() {
+        return keywords != null && !keywords.isEmpty();
+    }
+
+    public boolean hasNoKeywords() {
+        return !hasKeywords();
+    }
+
     public void setKeywords(String keywords) {
         this.keywords = keywords;
     }

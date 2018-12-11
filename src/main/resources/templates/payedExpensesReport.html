@@ -39,7 +39,7 @@
                     <div th:switch="${usersExpense.payed}" style="align:center">
                         <span th:case="${false}">
                             <img th:src="@{/icons/false.png}" style="width:16px;height:16px"/>
-                            <span th:text="'Saldo: ' + ${usersExpense.leftToPay} + ' PLN'"></span>
+                            <!--<span th:text="'Saldo: ' + ${usersExpense.leftToPay} + ' PLN'"></span>-->
                         </span>
                         <span th:case="${true}">
                             <img th:src="@{/icons/true.png}" style="width:16px;height:16px"/>

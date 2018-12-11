@@ -5,6 +5,8 @@ import org.springframework.data.annotation.Transient;
 
 import java.math.BigDecimal;
 
+import static java.math.BigDecimal.ZERO;
+
 public class UsersExpense extends Expenses {
     @Transient
     private boolean payed;
@@ -26,5 +28,19 @@ public class UsersExpense extends Expenses {
 
     public BigDecimal getLeftToPay() {
         return leftToPay;
+    }
+
+    public BigDecimal getPayedQty() {
+        return qty.add(leftToPay);
+    }
+
+    public UsersExpense add(UsersExpense expense){
+        BigDecimal payedQty = getPayedQty().add(expense.getPayedQty());
+        BigDecimal leftToPay = qty.subtract(payedQty);
+        return new UsersExpense(expense, gtEqZero(leftToPay), leftToPay);
+    }
+
+    private boolean gtEqZero(BigDecimal totalIncome) {
+        return totalIncome.compareTo(ZERO) >= 0;
     }
 }

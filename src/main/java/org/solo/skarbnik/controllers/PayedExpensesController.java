@@ -19,6 +19,8 @@ import java.util.function.Function;
 import static java.math.BigDecimal.ZERO;
 import static java.util.Collections.emptyList;
 import static java.util.Comparator.comparing;
+import static java.util.Comparator.comparingInt;
+import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.*;
 
 @Controller
@@ -75,10 +77,52 @@ public class PayedExpensesController {
                 .reduce(ZERO, BigDecimal::add);
     }
 
-    private ExpensesWithBalance toUsersExpenses(List<Expenses> expenses, final BigDecimal totalIncome) {
+    private <K, V> Map<K, V> mutableMap(Map<K, V> map) {
+        return new HashMap<>(map);
+    }
+
+    private ExpensesWithBalance toUsersExpenses(List<Expenses> expenses, final BigDecimal totalIncome, List<Incomes> userIncomes) {
+        List<Incomes> sortedUserIncomes = userIncomes.stream()
+                .sorted(comparingInt(a -> a.getExpenses().size()))
+                .collect(toList());
         List<UsersExpense> usersExpenses = new ArrayList<>(expenses.size());
-        BigDecimal incomeLeft = totalIncome;
-        for (Expenses expense : expenses) {
+
+        Map<Long, Expenses> expensesById = mutableMap(expenses.stream()
+                .collect(toMap(Expenses::getId, identity())));
+
+        List<Incomes> namedIncomes = sortedUserIncomes.stream()
+                .filter(userIncome -> !userIncome.getExpenses().isEmpty())
+                .collect(toList());
+
+        Map<Long, UsersExpense> namedExpenses = namedIncomes.stream()
+                .flatMap(userIncome -> {
+                    List<UsersExpense> userExpenses = new ArrayList<>();
+                    BigDecimal qty = userIncome.getQty();
+                    for (Long expenseId : userIncome.getExpenses()) {
+                        Expenses expense = expensesById.get(expenseId);
+                        qty = qty.subtract(expense.getQty());
+                        boolean payed = gtEqZero(qty);
+                        userExpenses.add(new UsersExpense(expense, payed, qty));
+                    }
+                    return userExpenses.stream();
+                }).collect(groupingBy(Expenses::getId))
+                .entrySet().stream()
+                .map(entry -> entry.getValue().stream().reduce(UsersExpense::add).orElse(null))
+                .filter(Objects::nonNull)
+                .collect(toMap(Expenses::getId, identity()));
+
+        usersExpenses.addAll(namedExpenses.values());
+
+        List<Incomes> nonameIncomes = sortedUserIncomes.stream()
+                .filter(userIncome -> userIncome.getExpenses().isEmpty())
+                .collect(toList());
+
+        List<Expenses> expensesToProcess = expenses.stream()
+                .filter(Expenses::hasNoKeywords)
+                .collect(toList());
+
+        BigDecimal incomeLeft = sumQty(nonameIncomes);
+        for (Expenses expense : expensesToProcess) {
             incomeLeft = incomeLeft.subtract(expense.getQty());
             UsersExpense usersExpense = gtEqZero(incomeLeft) ? expense.payed() : expense.unpaid(incomeLeft);
             usersExpenses.add(usersExpense);
@@ -88,6 +132,16 @@ public class PayedExpensesController {
                 .reduce(BigDecimal::add)
                 .map(totalIncome::subtract)
                 .get();
+
+        Set<Long> userExpensesIds = usersExpenses.stream()
+                .map(Expenses::getId)
+                .collect(toSet());
+
+        expenses.stream()
+                .filter(ex -> !userExpensesIds.contains(ex.getId()))
+                .forEach(ex -> usersExpenses.add(new UsersExpense(ex,false, ex.getQty())));
+
+        usersExpenses.sort(comparing(Expenses::getDueDate));
         return new ExpensesWithBalance(usersExpenses, balance);
     }
 
@@ -105,7 +159,7 @@ public class PayedExpensesController {
                 ? fillInUsersWithNoPayments(incomesForUsers)
                 : incomesForUsers;
 
-        return mapValues(allUsersIncomes, entry -> toUsersExpenses(expenses, sumQty(entry.getValue())));
+        return mapValues(allUsersIncomes, entry -> toUsersExpenses(expenses, sumQty(entry.getValue()), entry.getValue()));
     }
 
     private Map<String, List<Incomes>> fillInUsersWithNoPayments(Map<String, List<Incomes>> incomesForUsers) {
